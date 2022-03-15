@@ -12,6 +12,7 @@ for i in range(10):
 	GPIO.output(led_pin,1) # High(3.3v) 출력
 	time.sleep(1)
 	GPIO.output(led_pin,0) # Low(0v) 출력
+	
 	time.sleep(1)
 
 GPIO.cleanup()
