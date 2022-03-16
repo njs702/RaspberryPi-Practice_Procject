@@ -8,6 +8,7 @@ GPIO.setmode(GPIO.BCM)
 
 GPIO.setup(18,GPIO.OUT)
 
+# PWM인스턴스 p를 만들고 18번 핀을 PWM 핀으로 설정, 주파수 100	Hz
 p = GPIO.PWM(18,100)
 
 Frq = [262,294,330,349,392,440,493,523]
