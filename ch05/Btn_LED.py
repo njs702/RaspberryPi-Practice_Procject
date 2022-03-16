@@ -16,7 +16,6 @@ GPIO.setup(led_pin,GPIO.OUT)
 light_on = False
 def button_callback(channel):
 	global light_on
-	#light_on = True
 	if light_on == False:
 		GPIO.output(led_pin,1)
 		print("LED ON!!")
