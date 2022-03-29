@@ -23,7 +23,6 @@ try:
 	while True:
 		state = 0
 		state = GPIO.input(sensor)
-		
 		if state == 1: # 센서가 HIGH라면
 			GPIO.output(led_Y,1) # 노란색 led 켬
 			GPIO.output(led_R,0) # 빨간색 led 끔
