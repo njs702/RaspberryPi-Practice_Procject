@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 import RPi.GPIO as GPIO
 
 app = Flask(__name__)
@@ -11,15 +11,18 @@ GPIO.setup(LED,GPIO.OUT,initial=GPIO.LOW)
 def helloworld():
     return "Hello World!"
 
-@app.route("/led/<state>")
-def led(state):
+@app.route("/led")
+def led():
+    state = request.values.get("state","error")
+
     if state == "on":
         GPIO.output(LED,GPIO.HIGH)
-        return "LED ON"
-    if state == "off":
+    elif state == "off":
         GPIO.output(LED,GPIO.LOW)
-        return "LED OFF"
-
+    elif state == "error":
+        return "Query string not received"
+    else:
+        return "Wrong query string received"
     return "LED "+state
     
 
@@ -27,9 +30,6 @@ def led(state):
 def gpio_cleanup():
     GPIO.cleanup()
     return "GPIO CLEANUP"
-
-
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
