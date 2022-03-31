@@ -11,20 +11,24 @@ GPIO.setup(LED,GPIO.OUT,initial=GPIO.LOW)
 def helloworld():
     return "Hello World!"
 
-@app.route("/led/on")
-def led_on():
-    GPIO.output(LED,GPIO.HIGH)
-    return "LED ON"
+@app.route("/led/<state>")
+def led(state):
+    if state == "on":
+        GPIO.output(LED,GPIO.HIGH)
+        return "LED ON"
+    if state == "off":
+        GPIO.output(LED,GPIO.LOW)
+        return "LED OFF"
+
+    return "LED "+state
+    
 
 @app.route("/gpio/cleanup")
 def gpio_cleanup():
     GPIO.cleanup()
     return "GPIO CLEANUP"
 
-@app.route("/led/off")
-def led_off():
-    GPIO.output(LED,GPIO.LOW)
-    return "LED OFF"
+
 
 
 if __name__ == "__main__":
