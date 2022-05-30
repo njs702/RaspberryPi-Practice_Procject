@@ -14,7 +14,7 @@ pygame.mixer.init()
 for i in range(len(music_list)):
     file_path = "/home/pi/id_saver.txt"
 
-    pygame.mixer.music.set_volume(0.1)
+    pygame.mixer.music.set_volume(0.7)
     pygame.mixer.music.load(path + music_list[numbers[i]])
     pygame.mixer.music.play()
 

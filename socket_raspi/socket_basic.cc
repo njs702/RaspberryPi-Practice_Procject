@@ -116,9 +116,12 @@ static void* client_connection(void* arg){
     int csock = *((int*)arg);
     int read_size;
     char dataRecv;
-    char message[BUFSIZ], client_message[BUFSIZ], client_ip[BUFSIZ];
+    char *message, client_message[BUFSIZ], client_ip[BUFSIZ];
 
     inet_ntop(AF_INET,&client_addr.sin_addr,client_ip,BUFSIZ);
+
+    /* message = "hello client!\n";
+    write(csock,message,strlen(message)); */
 
     // Receive a message from client
     while(1){
@@ -156,7 +159,6 @@ static void* can_communication(void* arg){
 	rfilter[0].can_mask = 0xFF0;
 
     while(1){
-        //printf("I'm CAN thread!!!\n");
 
         // Reading a frame
 	    nBytes = read(can_socket,&recieve_frame,sizeof(struct can_frame));
@@ -164,8 +166,6 @@ static void* can_communication(void* arg){
             perror("Read");
             return NULL;
         }
-
-        //printf("0x%03X {%d} ",recieve_frame.can_id,recieve_frame.can_dlc);
 
         union temp_humid_union a;
         for (int i = 0; i < 8; ++i)
@@ -175,11 +175,6 @@ static void* can_communication(void* arg){
         temp_humid.humid = a.first.humid;
         temp_humid.temp = a.first.temp;
 
-        //printf("%f %f", a.first.humid, a.first.temp);
-        //printf("%f %f", temp_humid.humid, temp_humid.temp);   
-        //printf("\r\n");
-
-        //setsockopt(can_socket, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, sizeof(rfilter));
         sleep(5);
     }
 
@@ -197,7 +192,7 @@ static void* send_message(void* arg){
     while(1){
         sprintf(temp_humid_message,"%f %f",temp_humid.humid,temp_humid.temp);
         if(write(csock,temp_humid_message,strlen(temp_humid_message)) == -1){
-            printf("write error입니다\n");
+            printf("write error(socket disconnected)\n");
             break;
         }
         else{
@@ -254,8 +249,9 @@ int main(int argc, char **argv){
         pthread_create(&send_thread,NULL,send_message,&client_socket);
         // 쓰레드를 생성만들어서 온,습도 정보 데이터를 안드로이드로 보낸다
 
-        pthread_join(thread,NULL);
-        pthread_join(send_thread,NULL);
+        
+        //pthread_join(thread,NULL);
+        //pthread_join(send_thread,NULL);
         
     }
 
