@@ -76,7 +76,7 @@ void* thread_func(void* arg){
             }
             printf("\r\n");
             digitalWrite(led_green,1);
-            delay(500);
+            delay(10);
             digitalWrite(led_green,0);
             break;
 
@@ -88,7 +88,7 @@ void* thread_func(void* arg){
             }
             printf("\r\n");
             digitalWrite(led_blue,1);
-            delay(500);
+            delay(10);
             digitalWrite(led_blue,0);
             break;
         default:
@@ -97,9 +97,41 @@ void* thread_func(void* arg){
     
 }
 
+void* thread_send_func(void* arg){
+    int csock = *((int*)arg);
+    struct can_frame send_frame;
+
+    while(1){
+        // code 작성하기
+        if(digitalRead(btn_green)==1){
+            send_frame.can_id = 0x92;
+            send_frame.can_dlc = 8;
+            printf("Green button pushed!\n");
+            if(write(csock, &send_frame, sizeof(struct can_frame)) != sizeof(struct can_frame)){
+                perror("Write");
+                return NULL;           
+            }
+            delay(500);
+            continue;
+        }
+        if(digitalRead(btn_blue)==1){
+            printf("Blue button pushed!\n");
+            send_frame.can_id = 0x93;
+            send_frame.can_dlc = 8;
+            if(write(csock, &send_frame, sizeof(struct can_frame)) != sizeof(struct can_frame)){
+                perror("Write");
+                return NULL;           
+            }
+            delay(500);
+            continue;
+        }
+    }
+}
+
 int main(){
     
     pthread_t thread;
+    pthread_t send_thread;
 
     struct can_frame recieve_frame;
 	struct can_frame send_frame;
@@ -116,6 +148,8 @@ int main(){
 
     pinMode(btn_green,INPUT);
     pinMode(btn_blue,INPUT);
+
+    pthread_create(&send_thread,NULL,thread_send_func,&can_socket);
 
     while(1){
         pthread_create(&thread,NULL,thread_func,&can_socket);
